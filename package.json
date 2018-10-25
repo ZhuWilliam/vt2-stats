@@ -1,0 +1,25 @@
+{
+  "name": "vt2-statistics",
+  "version": "1.0.0",
+  "description": "A data-based visualizer for player stats in Vermintide 2",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZhuWilliam/vt2-stats-analyzer.git"
+  },
+  "keywords": [
+    "statistics",
+    "vermintide",
+    "visualization"
+  ],
+  "author": "William Zhu",
+  "license": "ISC",
+  "dependencies": {
+    "npm": "^6.1.0",
+    "express": "^4.16.3",
+    "sqlite3": "^4.0.3"
+  }
+}
