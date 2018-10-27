@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>VT2 Statistics</title>
+    
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="js/script.js"></script>
+  </head>
+  
+  <body>
+    <div style="padding-top:60px">
+    </div>
+    
+    <div class="container">
+      <form id="form-add">
+        <h2>Match Details</h2>
+        <div class="row">
+          <div class="column">
+            <!-- REALM -->
+            <fieldset class="radio">
+              <legend>Realm</legend>
+              <p>
+                <input type="radio" name="realm" id="realm_official" class="radio-option" value="official" checked="checked" />
+                <label for="realm_official">Official</label>
+              </p>
+              <p>
+                <input type="radio" name="realm" id="realm_unofficial" class="radio-option" value="unofficial" />
+                <label for="realm_unofficial">Unofficial</label>
+              </p>
+            </fieldset>
+            
+            <!-- PATCH -->
+            <p>
+              <label for="select-patch">Patch</label>
+              <select id="select-patch">
+                <option value="">--Please select a patch--</option>
+                <option value="1.0.0">1.0.0</option>
+                <option value="latest">Latest Official</option>
+              </select>
+            </p>
+          </div>
+            
+          <div class="column">
+            <!-- DIFFICULTY -->
+            <p>
+              <label for="select-difficulty">Difficulty</label>
+              <select id="select-difficulty">
+                <option value="recruit">Recruit</option>
+                <option value="veteran">Veteran</option>
+                <option value="champion">Champion</option>
+                <option value="legend" selected="selected">Legend</option>
+              </select>
+            </p>
+            
+            <!-- MAP -->
+            <label for="select-map">Map</label>
+              <select id="select-map">
+                <option value="" selected="selected">--Please select a map--</option>
+                <option value="Righteous Stand">Righteous Stand</option>
+                <option value="Convocation of Decay">Convocation of Decay</option>
+                <option value="Hunger in the Dark">Hunger in the Dark</option>
+                <option value="Halescourge">Halescourge</option>
+                <option value="Athel Yenlui">Athel Yenlui</option>
+                <option value="The Screaming Bell">The Screaming Bell</option>
+                <option value="Fort Brachsenbrucke">Fort Bracksenbrucke</option>
+                <option value="Into the Nest">Into the Nest</option>
+                <option value="Against the Grain">Against the Grain</option>
+                <option value="Empire in Flames">Empire in Flames</option>
+                <option value="Festering Ground">Festering Ground</option>
+                <option value="The War Camp">The War Camp</option>
+                <option value="The Skittergate">The Skittergte</option>
+                <option value="The Pit">The Pit</option>
+                <option value="The Blightreaper">The Blightreaper</option>
+              </select>
+            
+            <!-- VICTORY -->
+            <p>
+              <label for="select-victory">Did you win?</label>
+              <select id="select-victory">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </p>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="column">
+            <fieldset>
+              <legend>Upload a Scoreboard Screenshot</legend>
+              <label for="screenshot">Upload a Scoreboard Screenshot</label><input type="file" name="screenshot" />
+            </fieldset>
+            <p>or...</p>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="column">
+            <p>
+              <label for="p1-name">Player 1 Name</label>
+              <input type="text" name="p1-name" />
+            </p>
+          </div>
+          <div class="column">
+            <p>
+              <label for="p2-name">Player 2 Name</label>
+              <input type="text" name="p2-name" />
+            </p>
+          </div>
+          <div class="column">
+            <p>
+              <label for="p3-name">Player 3 Name</label>
+              <input type="text" name="p3-name" />
+            </p>
+          </div>
+          <div class="column">
+            <p>
+              <label for="p4-name">Player 4 Name</label>
+              <input type="text" name="p4-name" />
+            </p>
+          </div>
+        </div>
+        
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+  </body>
+</html>

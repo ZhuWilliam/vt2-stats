@@ -1,0 +1,51 @@
+/*** Global Styles ***/
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #333;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.column {
+  padding: 15px 10px;
+  box-sizing: border-box;
+  flex-grow: 1
+}
+
+/*** Content Styles ***/
+h2 {
+  color: white;
+}
+
+input, label {
+  display: block;
+}
+  
+  input[type="text"] {
+    width: 100%;
+  }
+
+/* Cancel display block for radio buttons */
+.radio input, .radio label {
+  display: inline-block;
+}
+
+@media screen and (max-width: 600px) {
+  .column-2, .column-4 {
+    flex: 100%;
+  }
+}

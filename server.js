@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-app.use(express.static('app'));
+app.use(express.static('vt2-stats'));
 
 // Database
 const sqlite3 = require('sqlite3');
