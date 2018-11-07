@@ -9,3 +9,15 @@ node server.js
 ```
 
 Will add more to this later...
+
+Filenames should be as:
+
+```
+<Full-Map-Name>_<Difficulty>_<Win>
+```
+
+Example for Athel Yenlui on Champion, where the team won:
+
+```
+Athel-Yenlui_Champion_1
+```

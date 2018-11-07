@@ -44,7 +44,7 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 /** Adds a song to the library; updates the lyric base if the song exists. */
-app.post('/addSong/', (req, res) => {
+app.post('/addGame/', function(req, res) {
   db.all('SELECT * FROM songs_to_lyrics WHERE title=$song AND artist=$artist AND language=$language',
     {
       $song: req.body.title,

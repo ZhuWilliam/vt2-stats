@@ -29,6 +29,7 @@ body {
 /*** Content Styles ***/
 h2 {
   color: white;
+  text-align: center;
 }
 
 input, label {
@@ -38,10 +39,23 @@ input, label {
   input[type="text"] {
     width: 100%;
   }
+  
+  input[type="submit"] {
+    text-algn: center;
+    margin: 0 auto;
+  }
 
 /* Cancel display block for radio buttons */
 .radio input, .radio label {
   display: inline-block;
+}
+
+.map-data {
+  display: flex;
+}
+
+#player-info {
+  display: flex;
 }
 
 @media screen and (max-width: 600px) {
