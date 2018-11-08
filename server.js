@@ -67,7 +67,7 @@ app.post('/addGame/', function(req, res) {
     for (var i = 0; i < 4; ++i) {
       console.log("------ i: " + i);
       
-      db.get(
+      /*db.get(
         'SELECT COUNT(*) AS "count" FROM player WHERE name = $name',
         {
           $name: req.body.players[i].name
@@ -76,9 +76,9 @@ app.post('/addGame/', function(req, res) {
           // if the player is not in the player table yet, add them
           console.log("DID WE MAKE IT< CAPTAIN");
           console.log(row);
-          if (row.count === 0) {
+          if (row.cnt === 0) {
             console.log("--------------- i: " + i);
-            
+            */
             db.run(
               'INSERT INTO player VALUES ($name, NULL)',
               {
@@ -89,11 +89,14 @@ app.post('/addGame/', function(req, res) {
                   console.log('Error in app.post(/addGame) on INSERTING player: ' + err);
                   console.log('attempted to insert: ' +  req.body.players[i].name)
                 }
+                else {
+                  console.log("INSERT TO player SUCCESS")
+                }
               }
             );
-          }
+          /*}
         }
-      );
+      );*/
       
       console.log("inserting into played_in")
       db.run(
