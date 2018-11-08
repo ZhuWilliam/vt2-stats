@@ -43,55 +43,92 @@ app.get('/average/:title/:artist', (req, res) => {
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-/** Adds a song to the library; updates the lyric base if the song exists. */
+/* Add a game to the database. */
 app.post('/addGame/', function(req, res) {
-  db.all('SELECT * FROM songs_to_lyrics WHERE title=$song AND artist=$artist AND language=$language',
-    {
-      $song: req.body.title,
-      $artist: req.body.artist,
-      $language: req.body.language
-    },
-    (err, rows) => {
-      if (rows.length > 0) { // update
-        db.run('UPDATE songs_to_lyrics SET oLyric=$oLyric, tLyric=$tLyric WHERE title=$song AND artist=$artist AND language=$language', {
-          $title: req.body.title,
-          $artist: req.body.artist,
-          $language: req.body.language,
-          $oLyric: req.body.oLyric,
-          $tLyric: req.body.tLyric
-        },
-          (err) => {
-            if (err) {
-              console.log('error in POST /addSong');
-              res.send({ status: false, message: 'Error in app.post(/addSong)' });
-            } else {
-              console.log('POST successful');
-              res.send({ status: true, insert: false});
-            }
-          });
-      } else { // insert
-        db.run(
-          'INSERT INTO songs_to_lyrics VALUES ($title, $artist, $language, $oLyric, $tLyric, 0)',
-          {
-            $title: req.body.title,
-            $artist: req.body.artist,
-            $language: req.body.language,
-            $oLyric: req.body.oLyric,
-            $tLyric: req.body.tLyric
-          },
-          (err) => {
-            if (err) {
-              console.log('error in POST');
-              res.send({ status: false, message: 'Error in app.post(/addSong)' });
-            } else {
-              console.log('POST successful');
-              res.send({ status: true, insert: true});
-            }
-          }
-        );
+  db.get('SELECT COUNT(*) AS "count" FROM game', function(err, row) {
+    const curGameID = row.count + 1;
+    
+    db.run(
+      'INSERT INTO game VALUES ($curGameID, $difficulty, $map, $didWin)',
+      {
+        $curGameID: curGameID,
+        $difficulty: req.body.difficulty,
+        $map: req.body.map,
+        $didWin: req.body.didWin
+      },
+      function(err) {
+        if (err) {
+          console.log('Error in app.post(/addGame/) on INSERTING game: ' + err);
+        }
       }
-    }
-  );
+    );
+    
+    // Inserting all player info into (player) and (played_in)
+    for (var i = 0; i < 4; ++i) {
+      console.log("------ i: " + i);
+      
+      db.get(
+        'SELECT COUNT(*) AS "count" FROM player WHERE name = $name',
+        {
+          $name: req.body.players[i].name
+        },
+        function(err, row) {
+          // if the player is not in the player table yet, add them
+          console.log("DID WE MAKE IT< CAPTAIN");
+          console.log(row);
+          if (row.count === 0) {
+            console.log("--------------- i: " + i);
+            
+            db.run(
+              'INSERT INTO player VALUES ($name, NULL)',
+              {
+                $name: req.body.players[i].name
+              },
+              function(err) {
+                if (err) {
+                  console.log('Error in app.post(/addGame) on INSERTING player: ' + err);
+                  console.log('attempted to insert: ' +  req.body.players[i].name)
+                }
+              }
+            );
+          }
+        }
+      );
+      
+      console.log("inserting into played_in")
+      db.run(
+        'INSERT INTO played_in VALUES ($name, $curGameID, $character, $class, $kills, $specials, $ranged, $melee, $damageDealt, $damageMonsters, $damageTaken, $hs, $saves, $revives, $ff)',
+        {
+          $name: req.body.players[i].name,
+          $curGameID: curGameID,
+          $character: req.body.players[i].character,
+          $class: req.body.players[i].class,
+          $kills: req.body.players[i].kills,
+          $specials: req.body.players[i].specials,
+          $ranged: req.body.players[i].ranged,
+          $melee: req.body.players[i].melee,
+          $damageDealt: req.body.players[i].damageDealt,
+          $damageMonsters: req.body.players[i].damageMonsters,
+          $damageTaken: req.body.players[i].damageTaken,
+          $hs: req.body.players[i].hs,
+          $saves: req.body.players[i].saves,
+          $revives: req.body.players[i].revives,
+          $ff: req.body.players[i].ff,
+        },
+        function(err) {
+          if (err) {
+            console.log('Error in app.post(/addGame/) on INSERTING played_in ON: ' + i);
+            console.log('    error: ' + err);
+            
+            if (i === 3) res.send({ status: false, message: 'POST ERROR' });
+          } 
+          else {
+            if (i === 3) res.send({ status: true, message: 'POST SUCCESS' });
+          }
+        }
+      );
+    };
+  });
 });
 
 /** Displays the user's score for a specific song. */

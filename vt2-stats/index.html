@@ -11,13 +11,16 @@
   </head>
   
   <body>
-    <div style="padding-top:60px">
-    </div>
+    <div style="padding-top:60px"></div>
+    
+    <p>
+      <input id="random" type="button" value="RANDOMIZE INPUTS" />
+    </p>
     
     <div class="container">
       <form id="form-add">
         <h2>Match Details</h2>
-        <div class="row">
+        <div id="match-info" class="row">
           <!-- Map Data -->
           <fieldset class="map-data">
             <legend>Map Data</legend>
@@ -58,8 +61,8 @@
             <div class="column">
               <!-- VICTORY -->
               <p>
-                <label for="select-victory">Did you win?</label>
-                <select id="select-victory">
+                <label for="select-win">Did you win?</label>
+                <select id="select-win">
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
@@ -88,6 +91,8 @@
         <input type="submit" value="Submit" id="add-game">
       </form>
     </div>
+    
+    <div style="padding-top:60px"></div>
     
     <template id="player-info-template">
       <div class="column">

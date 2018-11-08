@@ -2,21 +2,21 @@ const dbname = 'vt2.db';
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(dbname);
 
-db.serialize(() => {
+db.serialize(function() {
   db.run("CREATE TABLE player ("
           + "name TEXT,"
-          + "steam_id INTEGER UNIQUE,"
+          + "steam_id INTEGER UNIQUE DEFAULT NULL,"
           + "PRIMARY KEY (name));");
   
   db.run("CREATE TABLE game ("
-          + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+          + "id INTEGER PRIMARY KEY,"
           + "difficulty TEXT COLLATE NOCASE NOT NULL DEFAULT 'legend',"
           + "map TEXT COLLATE NOCASE NOT NULL,"
-          + "victory INTEGER DEFAULT 1);");
+          + "did_win INTEGER DEFAULT 1);");
   
   db.run("CREATE TABLE played_in ("
-          + "player_name TEXT,"
-          + "game_id INTEGER,"
+          + "player_name TEXT NOT NULL,"
+          + "game_id INTEGER NOT NULL,"
           + "character TEXT COLLATE NOCASE NOT NULL,"
           + "class TEXT COLLATE NOCASE NOT NULL,"
           + "total_kills INTEGER NOT NULL,"

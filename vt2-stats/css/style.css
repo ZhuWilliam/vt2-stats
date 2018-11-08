@@ -41,7 +41,7 @@ input, label {
   }
   
   input[type="submit"] {
-    text-algn: center;
+    text-align: center;
     margin: 0 auto;
   }
 
