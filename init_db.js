@@ -1,8 +1,8 @@
 const dbname = 'vt2.db';
-const sqlite3 = require('sqlite3');
+const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database(dbname);
 
-db.serialize(function() {
+db.serialize(() => {
   db.run("CREATE TABLE player ("
           + "name TEXT,"
           + "steam_id INTEGER UNIQUE DEFAULT NULL,"
