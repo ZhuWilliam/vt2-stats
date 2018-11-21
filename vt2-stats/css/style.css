@@ -4,12 +4,16 @@
 }
 
 body {
-  background: #333;
+  background: #1d1e22;
   color: rgba(255, 255, 255, 0.7);
+  
+  line-height: 1.6;
+  font-size: 18px;
+  padding: 0 10px;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -28,7 +32,7 @@ body {
 
 /*** Content Styles ***/
 h2 {
-  color: white;
+  color: rgba(255, 255, 255, 0.85);
   text-align: center;
 }
 
@@ -56,6 +60,10 @@ input, label {
 
 #player-info {
   display: flex;
+}
+
+#input-name {
+  max-width: 200px;
 }
 
 @media screen and (max-width: 600px) {

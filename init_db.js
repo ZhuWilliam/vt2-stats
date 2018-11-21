@@ -12,7 +12,8 @@ db.serialize(() => {
           + "id INTEGER PRIMARY KEY,"
           + "difficulty TEXT COLLATE NOCASE NOT NULL DEFAULT 'legend',"
           + "map TEXT COLLATE NOCASE NOT NULL,"
-          + "did_win INTEGER DEFAULT 1);");
+          + "did_win INTEGER NOT NULL,"
+          + "date TEXT COLLATE NOCASE NOT NULL);");
   
   db.run("CREATE TABLE played_in ("
           + "player_name TEXT NOT NULL,"

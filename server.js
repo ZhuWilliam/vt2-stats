@@ -9,6 +9,8 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+const moment = require('moment');
+
 app.listen(3000, () => {
   console.log('server started at http://localhost:3000/');
 });
@@ -23,10 +25,8 @@ app.get('/', (req, res) => {
 const getPlayerByName = async (name) => {
   let stmt = db.prepare('SELECT * FROM player WHERE name=?');
   let promise = new Promise((resolve, reject) => {
-    stmt.get(name, async (err, row) => {
-      console.log('-- at getPlayerByName finalize');
+    stmt.get(name, (err, row) => {
       stmt.finalize();
-      console.log('-- passed finalize');
       if (err) reject(err)
       
       resolve(row);
@@ -40,12 +40,9 @@ const getNewGameID = async () => {
   let stmt = db.prepare('SELECT COUNT(*) AS "count" FROM game');
   let promise = new Promise((resolve, reject) => {
     stmt.get((err, row) => {
-      console.log('-- at getNewGameID finalize');
       stmt.finalize();
-      console.log('-- passed finalize');
       if (err) reject(err);
       
-      console.log("the next game ID is: " + (row.count+1));
       resolve(row.count + 1);
     });
   });
@@ -53,11 +50,26 @@ const getNewGameID = async () => {
   return promise;
 };
 
-const insertGame = async (newGameID, difficulty, map, didWin) => {
-  console.log('     IN insertGame: ' + difficulty);
-  let stmt = db.prepare('INSERT INTO game VALUES (?, ?, ?, ?)')
+const getPlayedGames = async (playerName) => {
+  let stmt = db.prepare('SELECT COUNT(*) AS "count" FROM played_in WHERE player_name=?');
   let promise = new Promise((resolve, reject) => {
-    stmt.run([newGameID, difficulty, map, didWin], (err, statement) => {
+    stmt.get(playerName, (err, row) => {
+      stmt.finalize();
+      if (err) reject(err);
+      
+      resolve(row.count)
+    });
+  });
+  
+  return promise;
+};
+
+const insertGame = async (newGameID, difficulty, map, didWin, date) => {
+  console.log('     IN insertGame: ' + difficulty);
+  
+  let stmt = db.prepare('INSERT INTO game VALUES (?, ?, ?, ?, ?)')
+  let promise = new Promise((resolve, reject) => {
+    stmt.run([newGameID, difficulty, map, didWin, date], (err, statement) => {
       if (err) reject(err);
       console.log('-- at insertGame finalize');
       stmt.finalize();
@@ -91,9 +103,9 @@ const insertPlayedIn = async (data) => {
   let promise = new Promise((resolve, reject) => {
     stmt.run(data, (err, statement) => {
       if (err) reject(err);
-      console.log('-- at insertPlayedIn finalize');
+      //console.log('-- at insertPlayedIn finalize');
       //stmt.finalize();
-      console.log('-- passed finalize');
+      //console.log('-- passed finalize');
       resolve();
     });
   });
@@ -107,22 +119,18 @@ app.post('/addGame/', async (req, res) => {
   // [p.name, newGameID, p.character, p.class, p.kills, p.specials, p.ranged, p.melee, p.damageDealt, p.damageMonsters, p.damageTaken, p.hs, p.saves, p.revives, p.ff]
   const newGameID = await getNewGameID();
   console.log("the difficulty: " + req.body.difficulty);
-  await insertGame(newGameID, req.body.difficulty, req.body.map, req.body.didWin);
+  await insertGame(newGameID, req.body.difficulty, req.body.map, req.body.didWin, req.body.date);
   
   const promises = req.body.players.map(p => {
       const insertIfNotExists = async (b) => {
         console.log('in insertIfNotExists: ' + p.name, ', b: ' + (b == null));
         if (b == null) {
-          //console.log('    passed if of insert1');
           await insertPlayer(p.name);
-          //console.log('    passed insert1: ' + p.name);
         }
       };
       
       const insertResults = async () => {
-        //console.log('in insertResults: ' + p.name);
         await insertPlayedIn([p.name, newGameID, p.character, p.class, p.kills, p.specials, p.ranged, p.melee, p.damageDealt, p.damageMonsters, p.damageTaken, p.hs, p.saves, p.revives, p.ff]);
-        //console.log('    passed insert2: ' + p.name);
       };
       
       return getPlayerByName(p.name).then(insertIfNotExists).then(insertResults).catch((reason) => { console.err("cyka"); } );
@@ -131,94 +139,55 @@ app.post('/addGame/', async (req, res) => {
   await Promise.all(promises).catch((reason) => { console.err("blyat"); });
   
   res.send({ status: true, message: 'POST SUCCESS'});
-  
-  /*const newGameID = await getNewGameID();
-  console.log("newGameID: " + newGameID);
-  await insertGame(newGameID, req.body.difficulty, req.body.map, req.body.didWin);
-  
-  const someFunc = () => {
-    // stuff?
-    
-  };
-  
-  // Inserting all player info into (player) and (played_in)
-  for (let i = 0; i < 4; ++i) {
-    console.log("i: " + i);
-    
-    // If the player does not exist, add them to (player)
-    const nameExists = !!(await getPlayerByName(req.body.players[i].name));
-    if (!nameExists) {
-      console.log("NEW NAME!");
-      await insertPlayer(req.body.players[i].name);
-    }
-    
-    console.log('inserting into played_in');
-    await insertPlayedIn([
-      req.body.players[i].name,
-      newGameID,
-      req.body.players[i].character,
-      req.body.players[i].class,
-      req.body.players[i].kills,
-      req.body.players[i].specials,
-      req.body.players[i].ranged,
-      req.body.players[i].melee,
-      req.body.players[i].damageDealt,
-      req.body.players[i].damageMonsters,
-      req.body.players[i].damageTaken,
-      req.body.players[i].hs,
-      req.body.players[i].saves,
-      req.body.players[i].revives,
-      req.body.players[i].ff
-    ]);
-  };
-  
-  res.send({ status: true, message: 'POST SUCCESS' });*/
 });
 
-/** Get the average score of the song ordered by date. */
-app.get('/average/:title/:artist', (req, res) => {
-  const nameToLookup = req.params.title;
-  const artistToLookup = req.params.artist;
-  console.log("Request name:", nameToLookup);
-  console.log("Request artist:", artistToLookup);
-  db.all(
-    'SELECT AVG(score) as "score", date FROM score WHERE title=$song AND artist=$artist GROUP BY date',
-    {
-      $song: nameToLookup,
-      $artist: artistToLookup
-    },
-    (err, rows) => {
-      if (rows.length > 0) {
-        console.log('GET /average: score found for song ' + artistToLookup + ' - ' + nameToLookup);
-        res.send({scores: rows});
-      } else {
-        console.log('GET /average: No score found for any user for song ' + artistToLookup + ' - ' + nameToLookup);
-        res.send({});
-      }
+/* Checks if a certain player exists or not */
+app.post('/searchPlayer', async (req, res) => {
+  const playerName = req.body.playerName;
+  const promise = getPlayerByName(playerName);
+  console.log('the promise: ' + promise);
+  
+  promise.then((row) => {
+    if (!row) {
+      res.send({ status: false, message: 'POST FAILURE: Player "' + playerName + '" does not exist in the database.'});
     }
-  );
+    else {
+      console.log(row);
+      res.send({ status: true, message: 'POST SUCCESS: Player "' + playerName + '" exists in the database.' });
+    }
+  });
 });
 
-/** Displays the user's score for a specific song. */
-app.post('/showScore', (req, res) => {
-  const username = req.body.username;
-  const title = req.body.title;
-  const artist = req.body.artist;
-
-  db.all(
-    'SELECT score, date FROM score WHERE username=$username AND title=$title AND artist=$artist ORDER BY date',
-    {
-      $username: username,
-      $title: title,
-      $artist: artist
-    },
-    (err, rows) => {
-      if (rows.length > 0) {
-        res.send({ scores: rows });
-      } else {
-        console.log('Song doesn\'t exist while POSTing /showScore'); // user tries to lookup a song that doesn't exist in the db, throws error
-        res.send({});
-      }
-    }
-  );
+/* Get an array of stats for a player. */
+app.get('/stats/:playername', (req, res) => {
+  const playerName = req.params.playername;
+  let data = {};
+  
+  // Get total number of games in the database
+  let promise = getNewGameID();
+  promise.then((row) => {
+    data.totalGames = (row.count - 1);
+  });
+  
+  // Get total number of games played by the player
+  promise = getPlayedGames(playerName);
+  promise.then((row) => {
+    data.playedGames = row.count;
+  });
+  
+  // number of games won by player
+  // average win rate of player
+  // -- average win rate of player, per difficulty
+  // array of played classes and their numbers
+  // -- most played class, most played character
+  // win rate per class
+  // array of maps played and their numbers
+  // -- win rate per map
+  // average: damage dealt, kills, damage taken, ...
+  
+  res.send({
+    status: true,
+    message: 'GET SUCCESS: Player "' + playerName + '" exists in the database.',
+    data: data
+  });
 });

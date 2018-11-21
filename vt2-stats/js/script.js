@@ -109,6 +109,8 @@ $(() => {
     $('#match-info select').each((idx, val) => {
       setRandomSelectOption(val);
     });
+    
+    $('#input-date').val('2018-11-14');
   });
 });
 
@@ -148,6 +150,7 @@ $(() => {
         difficulty: $('#select-difficulty').val(),
         map: $('#select-map').val(),
         didWin: $('#select-win').val(),
+        date: $('#input-date').val(),
         players: playerList
       },
       success: (data) => {
@@ -155,8 +158,52 @@ $(() => {
         if (!data.status) {
           console.log('ERROR! Something went wrong!');
         }
-        else { // data.status
+        else {
           console.log('DATA.INSERT SUCCESS');
+        } 
+      }
+    });
+  });
+});
+
+$(() => {
+  const getStats = (playerName) => {
+    $.ajax({
+      url: '/stats/' + playerName,
+      type: 'GET',
+      dataType: 'json',
+      success: (data) => {
+        console.log(data);
+        console.log("graphing data sets...");
+        
+        // GRAPHING HERE
+      }
+    });
+  };
+  
+  // change back to # later
+  $('#form-stats').submit((e) => {
+    e.preventDefault();
+    
+    const playerName = $('#input-name').val();
+    console.log("playerName: " + playerName);
+    
+    $.ajax({
+      url: '/searchPlayer',
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        playerName: playerName
+      },
+      success: (data) => {
+        console.log(data);
+        if (!data.status) {
+          console.log(data.message);
+        }
+        else {
+          console.log(data.message);
+          
+          getStats(playerName);
         } 
       }
     });
